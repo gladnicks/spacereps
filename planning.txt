@@ -1,0 +1,9 @@
+What we want:
+spaced repetition flashcard app based on SM2 algorithm that works with the command line
+
+- main python program that works similarly to whos that pokemon builder in class
+options on startup:
+- quiz me
+	- program asks which deck you want to study, then quizzes you on each card if (current timestamp) > (I + last timestamp the card was studied), updating parameter metadata for each card studied. Cards you get wrong are NOT shown again until you've gone through the list once. Then, they are asked in order until you score them with 4 or more.
+- decks folder wherein each folder represents each deck and each deckname folder has a text file for each card and a metadata file. each text file has two sections separated by paragraphs that represent sides of the flashcard. each text file also has lines at the bottom for metadata tracking parameters used by the SM2 algorithm.
+- for now, I can create the cards and decks by hand. eventually, this functionality should be supported from the command line.
