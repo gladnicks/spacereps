@@ -43,10 +43,24 @@ def main():
     print("Which deck would you like to study or add to?")
     for idx, deck in enumerate(decks['decks']):
         print(f"{idx}: {deck['name']}")
+    print(f"{len(decks['decks'])}: New deck")
     deck_choice = int(input())
-    study_deck = decks['decks'][deck_choice]
-    # Ask whether you'd like to add to or study the deck
-    mode = input("Would like to (a)dd to or (s)tudy this deck? ")
+    mode = None
+
+    # Create a new deck if the user has indicated they want to
+    if deck_choice == len(decks['decks']):
+        name = input("What is the name of your new deck? ")
+        new_deck = {
+            "name": name,
+            "cards": []
+        }
+        decks['decks'].append(new_deck)
+        print(f"Your new deck {name} has been created! Please add at least one card.")
+        mode = "a"
+
+    # Ask whether the user would like to add to or study the deck
+    if mode is None:
+        mode = input("Would like to (a)dd to or (s)tudy this deck? ")
 
     # Add mode
     if mode == "a":
@@ -73,6 +87,7 @@ def main():
     # Study mode
     elif mode == "s":
         # Add each card to the study queue if it's been at least I (spaced repetition interval) days since the last time the card was studied
+        study_deck = decks['decks'][deck_choice]
         to_study = Queue()
         for index, card in enumerate(study_deck['cards']):
             if time() >= card['i']*24*60*60 + card['last_studied']:
