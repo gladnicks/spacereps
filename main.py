@@ -2,14 +2,6 @@ import json
 from queue import Queue
 from time import time
 
-# TODO:
-# implement ability to create new decks json file if it doesn't exist
-# add the decks json file to a .gitignore
-# implement other versions of spaced repetition algorithms in a separate file
-# better formatting for command line readability
-# maybe implement a ui other than the command line?
-# pretty format in json file
-
 def sm2(q: int, n: int, ef: float, i: int):
     """
     input:  q: The user grade for a card from 0-5
@@ -100,7 +92,7 @@ def main():
             want_to_quit = input("Press q to (q)uit, or any other key to add more cards ") == "q"
         # Update the decks json file
         with open("decks.json", "w") as updated_decks_file:
-            json.dump(decks, updated_decks_file)
+            json.dump(decks, updated_decks_file, indent=4)
         print(f"{decks['decks'][deck_choice]['name']} has been successfully updated!")
     
     # Study mode
@@ -130,7 +122,7 @@ def main():
             decks['decks'][deck_choice]['cards'][current_idx]['last_studied'] = last_studied
         # Update the decks json file
         with open("decks.json", "w") as updated_decks_file:
-            json.dump(decks, updated_decks_file)
+            json.dump(decks, updated_decks_file, indent=4)
         print("No more cards to study. Come back tomorrow!")
     
     # Invalid mode input
