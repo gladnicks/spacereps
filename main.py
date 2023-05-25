@@ -39,41 +39,84 @@ def main():
     with open("decks.json", "r") as decks_file:
         decks = json.load(decks_file)
     
-    # Ask user which deck they want to study and assign it to a variable
-    print("Which deck would you like to study?")
+    # Ask user which deck they want to work with and assign it to a variable
+    print("Which deck would you like to study or add to?")
     for idx, deck in enumerate(decks['decks']):
         print(f"{idx}: {deck['name']}")
+    print(f"{len(decks['decks'])}: New deck")
     deck_choice = int(input())
-    study_deck = decks['decks'][deck_choice]
+    mode = None
 
-    # Add each card to the study queue if it's been at least I (spaced repetition interval) days since the last time the card was studied
-    to_study = Queue()
-    for index, card in enumerate(study_deck['cards']):
-        if time() >= card['i']*24*60*60 + card['last_studied']:
-            to_study.put((index, card))
+    # Create a new deck if the user has indicated they want to
+    if deck_choice == len(decks['decks']):
+        name = input("What is the name of your new deck? ")
+        new_deck = {
+            "name": name,
+            "cards": []
+        }
+        decks['decks'].append(new_deck)
+        print(f"Your new deck {name} has been created! Please add at least one card.")
+        mode = "a"
+
+    # Ask whether the user would like to add to or study the deck
+    if mode is None:
+        mode = input("Would like to (a)dd to or (s)tudy this deck? ")
+
+    # Add mode
+    if mode == "a":
+        want_to_quit = False
+        while not want_to_quit:
+            # Ask user to define front and back of new card, then add card to deck
+            front = input("What should the front of this new card say?\n")
+            back = input("What should the back of this new card say?\n")
+            card = {
+                "front": front,
+                "back": back,
+                "n": 0,
+                "ef": 2.5,
+                "i": 0,
+                "last_studied": time()
+            }
+            decks['decks'][deck_choice]['cards'].append(card)
+            want_to_quit = input("Press q to (q)uit, or any other key to add more cards ") == "q"
+        # Update the decks json file
+        with open("decks.json", "w") as updated_decks_file:
+            json.dump(decks, updated_decks_file)
+        print(f"{decks['decks'][deck_choice]['name']} has been successfully updated!")
     
-    # Loop over study queue until all of the cards are recalled with at least a memory score of 4
-    while not to_study.empty():
-        current = to_study.get()
-        current_idx = current[0]
-        print(f"front of card:\n{current[1]['front']}")
-        input("[Enter] to show other side")
-        print(f"back of card:\n{current[1]['back']}")
-        q = int(input("What would you rate your ease of remembering this card (0-5)? "))
-        if q < 4:
-            to_study.put(current)
-
-        # Update card metadata
-        last_studied = time()
-        n, ef, i = sm2(q, current[1]['n'], current[1]['ef'], current[1]['i'])
-        decks['decks'][deck_choice]['cards'][current_idx]['n'] = n
-        decks['decks'][deck_choice]['cards'][current_idx]['ef'] = ef
-        decks['decks'][deck_choice]['cards'][current_idx]['i'] = i
-        decks['decks'][deck_choice]['cards'][current_idx]['last_studied'] = last_studied
-
-    with open("decks.json", "w") as updated_decks_file:
-        json.dump(decks, updated_decks_file)
-    print("No more cards to study. Come back tomorrow!")
+    # Study mode
+    elif mode == "s":
+        # Add each card to the study queue if it's been at least I (spaced repetition interval) days since the last time the card was studied
+        study_deck = decks['decks'][deck_choice]
+        to_study = Queue()
+        for index, card in enumerate(study_deck['cards']):
+            if time() >= card['i']*24*60*60 + card['last_studied']:
+                to_study.put((index, card))
+        # Loop over study queue until all of the cards are recalled with at least a memory score of 4
+        while not to_study.empty():
+            current = to_study.get()
+            current_idx = current[0]
+            print(f"front of card:\n{current[1]['front']}")
+            input("[Enter] to show other side")
+            print(f"back of card:\n{current[1]['back']}")
+            q = int(input("What would you rate your ease of remembering this card (0-5)? "))
+            if q < 4:
+                to_study.put(current)
+            # Update card metadata
+            last_studied = time()
+            n, ef, i = sm2(q, current[1]['n'], current[1]['ef'], current[1]['i'])
+            decks['decks'][deck_choice]['cards'][current_idx]['n'] = n
+            decks['decks'][deck_choice]['cards'][current_idx]['ef'] = ef
+            decks['decks'][deck_choice]['cards'][current_idx]['i'] = i
+            decks['decks'][deck_choice]['cards'][current_idx]['last_studied'] = last_studied
+        # Update the decks json file
+        with open("decks.json", "w") as updated_decks_file:
+            json.dump(decks, updated_decks_file)
+        print("No more cards to study. Come back tomorrow!")
+    
+    # Invalid mode input
+    else:
+        print("Invalid input. Please enter either 'a' or 's'")
 
 if __name__ == '__main__':
     main()
