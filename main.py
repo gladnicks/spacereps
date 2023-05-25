@@ -2,14 +2,6 @@ import json
 from queue import Queue
 from time import time
 
-# TODO:
-# implement ability to create new decks json file if it doesn't exist
-# add the decks json file to a .gitignore
-# implement other versions of spaced repetition algorithms in a separate file
-# better formatting for command line readability
-# maybe implement a ui other than the command line?
-# pretty format in json file
-
 def sm2(q: int, n: int, ef: float, i: int):
     """
     input:  q: The user grade for a card from 0-5
