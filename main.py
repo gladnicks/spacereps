@@ -92,7 +92,7 @@ def main():
             want_to_quit = input("Press q to (q)uit, or any other key to add more cards ") == "q"
         # Update the decks json file
         with open("decks.json", "w") as updated_decks_file:
-            json.dump(decks, updated_decks_file)
+            json.dump(decks, updated_decks_file, indent=4)
         print(f"{decks['decks'][deck_choice]['name']} has been successfully updated!")
     
     # Study mode
@@ -122,7 +122,7 @@ def main():
             decks['decks'][deck_choice]['cards'][current_idx]['last_studied'] = last_studied
         # Update the decks json file
         with open("decks.json", "w") as updated_decks_file:
-            json.dump(decks, updated_decks_file)
+            json.dump(decks, updated_decks_file, indent=4)
         print("No more cards to study. Come back tomorrow!")
     
     # Invalid mode input

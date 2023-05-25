@@ -11,6 +11,5 @@ After cloning, you can execute `python3 main.py` from the terminal to run the pr
 - Support the ability to delete and modify decks and the cards within them
 - Exception handling
 - More aesthetically appealing user interface
-- Pretty JSON formatting
 - Improved menu
 - Cleaner and simpler code
