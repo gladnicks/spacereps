@@ -2,6 +2,14 @@ import json
 from queue import Queue
 from time import time
 
+# TODO:
+# implement ability to create new decks json file if it doesn't exist
+# add the decks json file to a .gitignore
+# implement other versions of spaced repetition algorithms in a separate file
+# better formatting for command line readability
+# maybe implement a ui other than the command line?
+# pretty format in json file
+
 def sm2(q: int, n: int, ef: float, i: int):
     """
     input:  q: The user grade for a card from 0-5
@@ -36,18 +44,29 @@ def sm2(q: int, n: int, ef: float, i: int):
 
 def main():
     # Load the decks from the JSON decks file
-    with open("decks.json", "r") as decks_file:
-        decks = json.load(decks_file)
+    try:
+        with open("decks.json", "r") as decks_file:
+            decks = json.load(decks_file)
+    # If it doesn't exist, create it
+    except FileNotFoundError:
+        with open("decks.json", "w"):
+            decks = {
+                "decks": []
+            }
     
-    # Ask user which deck they want to work with and assign it to a variable
-    print("Which deck would you like to study or add to?")
-    for idx, deck in enumerate(decks['decks']):
-        print(f"{idx}: {deck['name']}")
-    print(f"{len(decks['decks'])}: New deck")
-    deck_choice = int(input())
+    if len(decks['decks']) == 0:
+        print("You have no decks yet! Please add at least one deck.")
+        deck_choice = 0
+    else:
+        # Ask user which deck they want to work with and assign it to a variable
+        print("Which deck would you like to study or add to?")
+        for idx, deck in enumerate(decks['decks']):
+            print(f"{idx}: {deck['name']}")
+        print(f"{len(decks['decks'])}: New deck")
+        deck_choice = int(input())
     mode = None
 
-    # Create a new deck if the user has indicated they want to
+    # Create a new deck if there aren't any or if the user has indicated they want to
     if deck_choice == len(decks['decks']):
         name = input("What is the name of your new deck? ")
         new_deck = {
