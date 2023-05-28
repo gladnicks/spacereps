@@ -10,6 +10,5 @@ After cloning, you can execute `python3 main.py` from the terminal to run the pr
 ## TODO / Upcoming features:
 - Support the ability to delete and modify decks and the cards within them
 - Exception handling
-- More aesthetically appealing user interface
-- Improved menu
+- Improved menu (ability to choose a different deck without exiting, more succinct code for actions menu)
 - Cleaner and simpler code

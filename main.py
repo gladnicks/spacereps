@@ -2,6 +2,7 @@ import json
 from queue import Queue
 from time import time
 
+
 def sm2(q: int, n: int, ef: float, i: int):
     """
     input:  q: The user grade for a card from 0-5
@@ -34,6 +35,57 @@ def sm2(q: int, n: int, ef: float, i: int):
 
     return mod_n, mod_ef, mod_i
 
+
+def add_to_deck(decks: dict, deck_choice: int):
+    mod_decks = decks
+    want_to_quit = False
+    while not want_to_quit:
+        # Ask user to define front and back of new card, then add card to deck
+        front = input("\n\nWhat should the front of this new card say?\n")
+        back = input("What should the back of this new card say?\n")
+        card = {
+            "front": front,
+            "back": back,
+            "n": 0,
+            "ef": 2.5,
+            "i": 0,
+            "last_studied": time()
+        }
+        mod_decks['decks'][deck_choice]['cards'].append(card)
+        want_to_quit = input("Press q to (q)uit, or any other key to add more cards ") == "q"
+    print(f"{mod_decks['decks'][deck_choice]['name']} has been updated!")
+    return mod_decks
+
+
+def study_deck(decks: dict, deck_choice: int):
+    mod_decks = decks
+    # Add each card to the study queue if it's been at least I (spaced repetition interval) days since the last time the card was studied
+    study_deck = mod_decks['decks'][deck_choice]
+    to_study = Queue()
+    for index, card in enumerate(study_deck['cards']):
+        if time() >= card['i']*24*60*60 + card['last_studied']:
+            to_study.put((index, card))
+    # Loop over study queue until all of the cards are recalled with at least a memory score of 4
+    while not to_study.empty():
+        current = to_study.get()
+        current_idx = current[0]
+        print(f"\n\nfront of card:\n{current[1]['front']}")
+        input("Press any key to show other side")
+        print(f"back of card:\n{current[1]['back']}")
+        q = int(input("What would you rate your ease of remembering this card (0-5)? "))
+        if q < 4:
+            to_study.put(current)
+        # Update card metadata
+        last_studied = time()
+        n, ef, i = sm2(q, current[1]['n'], current[1]['ef'], current[1]['i'])
+        mod_decks['decks'][deck_choice]['cards'][current_idx]['n'] = n
+        mod_decks['decks'][deck_choice]['cards'][current_idx]['ef'] = ef
+        mod_decks['decks'][deck_choice]['cards'][current_idx]['i'] = i
+        mod_decks['decks'][deck_choice]['cards'][current_idx]['last_studied'] = last_studied
+    print("No more cards to study. Come back tomorrow!")
+    return mod_decks
+
+
 def main():
     # Load the decks from the JSON decks file
     try:
@@ -51,11 +103,11 @@ def main():
         deck_choice = 0
     else:
         # Ask user which deck they want to work with and assign it to a variable
-        print("\nWhich deck would you like to study or add to?")
+        print("\n-- Decks Menu --")
         for idx, deck in enumerate(decks['decks']):
             print(f"{idx}: {deck['name']}")
         print(f"{len(decks['decks'])}: New deck")
-        deck_choice = int(input())
+        deck_choice = int(input("Which deck? "))
     mode = None
 
     # Create a new deck if there aren't any or if the user has indicated they want to
@@ -69,63 +121,37 @@ def main():
         print(f"Your new deck {name} has been created! Please add at least one card.")
         mode = "a"
 
-    # Ask whether the user would like to add to or study the deck
+    menu = {
+        "a": add_to_deck,
+        "s": study_deck,
+    }
+
     if mode is None:
-        mode = input("\nWould like to (a)dd to or (s)tudy this deck? ")
+            print("\n-- Actions Menu --")
+            for key, value in menu.items():
+                print(f"{key}: {value.__name__.replace('_', ' ')}")
+            print("q: quit")
+            mode = input("Which action? ")
 
-    # Add mode
-    if mode == "a":
-        want_to_quit = False
-        while not want_to_quit:
-            # Ask user to define front and back of new card, then add card to deck
-            front = input("\n\nWhat should the front of this new card say?\n")
-            back = input("What should the back of this new card say?\n")
-            card = {
-                "front": front,
-                "back": back,
-                "n": 0,
-                "ef": 2.5,
-                "i": 0,
-                "last_studied": time()
-            }
-            decks['decks'][deck_choice]['cards'].append(card)
-            want_to_quit = input("Press q to (q)uit, or any other key to add more cards ") == "q"
-        print(f"{decks['decks'][deck_choice]['name']} has been updated!")
-    
-    # Study mode
-    elif mode == "s":
-        # Add each card to the study queue if it's been at least I (spaced repetition interval) days since the last time the card was studied
-        study_deck = decks['decks'][deck_choice]
-        to_study = Queue()
-        for index, card in enumerate(study_deck['cards']):
-            if time() >= card['i']*24*60*60 + card['last_studied']:
-                to_study.put((index, card))
-        # Loop over study queue until all of the cards are recalled with at least a memory score of 4
-        while not to_study.empty():
-            current = to_study.get()
-            current_idx = current[0]
-            print(f"\n\nfront of card:\n{current[1]['front']}")
-            input("Press any key to show other side")
-            print(f"back of card:\n{current[1]['back']}")
-            q = int(input("What would you rate your ease of remembering this card (0-5)? "))
-            if q < 4:
-                to_study.put(current)
-            # Update card metadata
-            last_studied = time()
-            n, ef, i = sm2(q, current[1]['n'], current[1]['ef'], current[1]['i'])
-            decks['decks'][deck_choice]['cards'][current_idx]['n'] = n
-            decks['decks'][deck_choice]['cards'][current_idx]['ef'] = ef
-            decks['decks'][deck_choice]['cards'][current_idx]['i'] = i
-            decks['decks'][deck_choice]['cards'][current_idx]['last_studied'] = last_studied
-        print("No more cards to study. Come back tomorrow!")
-    
-    # Invalid mode input
-    else:
-        print("Invalid input. Please enter either 'a' or 's'")
-
+    while mode != "q":
+        if mode == "q":
+            break
+        try:
+            decks = menu[mode](decks, deck_choice)
+        except KeyError:
+            print("Invalid input. Please enter either 'a' or 's'")
+        
+        # Ask what the user would like to do
+        print("\n-- Actions Menu --")
+        for key, value in menu.items():
+            print(f"{key}: {value.__name__.replace('_', ' ')}")
+        print("q: quit")
+        mode = input("Which action? ")
+            
     # Update the decks json file
     with open("decks.json", "w") as updated_decks_file:
         json.dump(decks, updated_decks_file, indent=4)
+    print("\nCome back soon!")
 
 if __name__ == '__main__':
     main()
