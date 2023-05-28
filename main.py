@@ -47,11 +47,11 @@ def main():
             }
     
     if len(decks['decks']) == 0:
-        print("You have no decks yet! Please add at least one deck.")
+        print("\nYou have no decks yet! Please add at least one deck.")
         deck_choice = 0
     else:
         # Ask user which deck they want to work with and assign it to a variable
-        print("Which deck would you like to study or add to?")
+        print("\nWhich deck would you like to study or add to?")
         for idx, deck in enumerate(decks['decks']):
             print(f"{idx}: {deck['name']}")
         print(f"{len(decks['decks'])}: New deck")
@@ -60,7 +60,7 @@ def main():
 
     # Create a new deck if there aren't any or if the user has indicated they want to
     if deck_choice == len(decks['decks']):
-        name = input("What is the name of your new deck? ")
+        name = input("\nWhat is the name of your new deck? ")
         new_deck = {
             "name": name,
             "cards": []
@@ -71,14 +71,14 @@ def main():
 
     # Ask whether the user would like to add to or study the deck
     if mode is None:
-        mode = input("Would like to (a)dd to or (s)tudy this deck? ")
+        mode = input("\nWould like to (a)dd to or (s)tudy this deck? ")
 
     # Add mode
     if mode == "a":
         want_to_quit = False
         while not want_to_quit:
             # Ask user to define front and back of new card, then add card to deck
-            front = input("What should the front of this new card say?\n")
+            front = input("\n\nWhat should the front of this new card say?\n")
             back = input("What should the back of this new card say?\n")
             card = {
                 "front": front,
@@ -90,10 +90,7 @@ def main():
             }
             decks['decks'][deck_choice]['cards'].append(card)
             want_to_quit = input("Press q to (q)uit, or any other key to add more cards ") == "q"
-        # Update the decks json file
-        with open("decks.json", "w") as updated_decks_file:
-            json.dump(decks, updated_decks_file, indent=4)
-        print(f"{decks['decks'][deck_choice]['name']} has been successfully updated!")
+        print(f"{decks['decks'][deck_choice]['name']} has been updated!")
     
     # Study mode
     elif mode == "s":
@@ -107,8 +104,8 @@ def main():
         while not to_study.empty():
             current = to_study.get()
             current_idx = current[0]
-            print(f"front of card:\n{current[1]['front']}")
-            input("[Enter] to show other side")
+            print(f"\n\nfront of card:\n{current[1]['front']}")
+            input("Press any key to show other side")
             print(f"back of card:\n{current[1]['back']}")
             q = int(input("What would you rate your ease of remembering this card (0-5)? "))
             if q < 4:
@@ -120,14 +117,15 @@ def main():
             decks['decks'][deck_choice]['cards'][current_idx]['ef'] = ef
             decks['decks'][deck_choice]['cards'][current_idx]['i'] = i
             decks['decks'][deck_choice]['cards'][current_idx]['last_studied'] = last_studied
-        # Update the decks json file
-        with open("decks.json", "w") as updated_decks_file:
-            json.dump(decks, updated_decks_file, indent=4)
         print("No more cards to study. Come back tomorrow!")
     
     # Invalid mode input
     else:
         print("Invalid input. Please enter either 'a' or 's'")
+
+    # Update the decks json file
+    with open("decks.json", "w") as updated_decks_file:
+        json.dump(decks, updated_decks_file, indent=4)
 
 if __name__ == '__main__':
     main()
