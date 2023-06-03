@@ -87,6 +87,11 @@ def study_deck(decks: dict, deck_choice: int):
 
 
 def main():
+    menu = {
+        "a": add_to_deck,
+        "s": study_deck,
+    }
+
     # Load the decks from the JSON decks file
     try:
         with open("decks.json", "r") as decks_file:
@@ -100,18 +105,6 @@ def main():
     
     if len(decks['decks']) == 0:
         print("\nYou have no decks yet! Please add at least one deck.")
-        deck_choice = 0
-    else:
-        # Ask user which deck they want to work with and assign it to a variable
-        print("\n-- Decks Menu --")
-        for idx, deck in enumerate(decks['decks']):
-            print(f"{idx}: {deck['name']}")
-        print(f"{len(decks['decks'])}: New deck")
-        deck_choice = int(input("Which deck? "))
-    mode = None
-
-    # Create a new deck if there aren't any or if the user has indicated they want to
-    if deck_choice == len(decks['decks']):
         name = input("\nWhat is the name of your new deck? ")
         new_deck = {
             "name": name,
@@ -119,34 +112,44 @@ def main():
         }
         decks['decks'].append(new_deck)
         print(f"Your new deck {name} has been created! Please add at least one card.")
-        mode = "a"
+        decks = menu["a"](decks, 0)
 
-    menu = {
-        "a": add_to_deck,
-        "s": study_deck,
-    }
+    ### loop the decks menu section while we're still adding new decks
+    deck_choice = len(decks['decks'])
+    while deck_choice == len(decks['decks']):
+        # Ask user which deck they want to work with and assign it to a variable
+        print("\n-- Decks Menu --")
+        for idx, deck in enumerate(decks['decks']):
+            print(f"{idx}: {deck['name']}")
+        print(f"{len(decks['decks'])}: New deck")
+        deck_choice = int(input("Which deck would you like to work with? "))
 
-    if mode is None:
-            print("\n-- Actions Menu --")
-            for key, value in menu.items():
-                print(f"{key}: {value.__name__.replace('_', ' ')}")
-            print("q: quit")
-            mode = input("Which action? ")
-
+        # Create a new deck if there aren't any or if the user has indicated they want to
+        if deck_choice == len(decks['decks']):
+            name = input("\nWhat is the name of your new deck? ")
+            new_deck = {
+                "name": name,
+                "cards": []
+            }
+            decks['decks'].append(new_deck)
+            print(f"Your new deck {name} has been created! Please add at least one card.")
+            decks = menu["a"](decks, deck_choice)
+            deck_choice += 1
+    
+    mode = None
     while mode != "q":
-        if mode == "q":
-            break
-        try:
-            decks = menu[mode](decks, deck_choice)
-        except KeyError:
-            print("Invalid input. Please enter either 'a' or 's'")
-        
         # Ask what the user would like to do
         print("\n-- Actions Menu --")
         for key, value in menu.items():
             print(f"{key}: {value.__name__.replace('_', ' ')}")
         print("q: quit")
         mode = input("Which action? ")
+        if mode == "q":
+            break
+        try:
+            decks = menu[mode](decks, deck_choice)
+        except KeyError:
+            print("Invalid input. Please enter either 'a' or 's'")
             
     # Update the decks json file
     with open("decks.json", "w") as updated_decks_file:
