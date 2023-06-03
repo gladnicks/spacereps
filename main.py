@@ -18,21 +18,13 @@ def sm2(q: int, n: int, ef: float, i: int):
     output: Updated values of n, ef, and i
     """
     if q >= 3:
-        if n == 0:
-            mod_i = 1
-        elif n == 1:
-            mod_i = 6
-        else:
-            mod_i = round(i * ef)
         mod_n = n + 1
+        mod_i = 1 if n == 0 else (6 if n == 1 else round(i * ef))
     else:
         mod_n = 0
         mod_i = 1
+    mod_ef = max(1.3, ef + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02)))
     
-    mod_ef = ef + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02))
-    if mod_ef < 1.3:
-        mod_ef = 1.3
-
     return mod_n, mod_ef, mod_i
 
 
