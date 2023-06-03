@@ -28,8 +28,19 @@ def sm2(q: int, n: int, ef: float, i: int):
     return mod_n, mod_ef, mod_i
 
 
-def add_to_deck(decks: dict, deck_choice: int):
-    mod_decks = decks
+def new_deck():
+    name = input("\nWhat is the name of your new deck? ")
+    new_deck = {
+        "name": name,
+        "cards": []
+    }
+    print(f"Your new deck {name} has been created! Please add at least one card.")
+    new_deck = add_to_deck(new_deck)
+    return new_deck
+
+
+def add_to_deck(deck: dict):
+    mod_deck = deck
     want_to_quit = False
     while not want_to_quit:
         # Ask user to define front and back of new card, then add card to deck
@@ -43,16 +54,16 @@ def add_to_deck(decks: dict, deck_choice: int):
             "i": 0,
             "last_studied": time()
         }
-        mod_decks['decks'][deck_choice]['cards'].append(card)
+        mod_deck['cards'].append(card)
         want_to_quit = input("Press q to (q)uit, or any other key to add more cards ") == "q"
-    print(f"{mod_decks['decks'][deck_choice]['name']} has been updated!")
-    return mod_decks
+    print(f"{mod_deck['name']} has been updated!")
+    return mod_deck
 
 
-def study_deck(decks: dict, deck_choice: int):
-    mod_decks = decks
+def study_deck(deck: dict):
+    mod_deck = deck
     # Add each card to the study queue if it's been at least I (spaced repetition interval) days since the last time the card was studied
-    study_deck = mod_decks['decks'][deck_choice]
+    study_deck = mod_deck
     to_study = Queue()
     for index, card in enumerate(study_deck['cards']):
         if time() >= card['i']*24*60*60 + card['last_studied']:
@@ -70,20 +81,21 @@ def study_deck(decks: dict, deck_choice: int):
         # Update card metadata
         last_studied = time()
         n, ef, i = sm2(q, current[1]['n'], current[1]['ef'], current[1]['i'])
-        mod_decks['decks'][deck_choice]['cards'][current_idx]['n'] = n
-        mod_decks['decks'][deck_choice]['cards'][current_idx]['ef'] = ef
-        mod_decks['decks'][deck_choice]['cards'][current_idx]['i'] = i
-        mod_decks['decks'][deck_choice]['cards'][current_idx]['last_studied'] = last_studied
+        mod_deck['cards'][current_idx]['n'] = n
+        mod_deck['cards'][current_idx]['ef'] = ef
+        mod_deck['cards'][current_idx]['i'] = i
+        mod_deck['cards'][current_idx]['last_studied'] = last_studied
     print("No more cards to study. Come back tomorrow!")
-    return mod_decks
+    return mod_deck
+
+
+ACTIONS_MENU = {
+    "a": add_to_deck,
+    "s": study_deck,
+}
 
 
 def main():
-    menu = {
-        "a": add_to_deck,
-        "s": study_deck,
-    }
-
     # Load the decks from the JSON decks file
     try:
         with open("decks.json", "r") as decks_file:
@@ -97,49 +109,34 @@ def main():
     
     if len(decks['decks']) == 0:
         print("\nYou have no decks yet! Please add at least one deck.")
-        name = input("\nWhat is the name of your new deck? ")
-        new_deck = {
-            "name": name,
-            "cards": []
-        }
-        decks['decks'].append(new_deck)
-        print(f"Your new deck {name} has been created! Please add at least one card.")
-        decks = menu["a"](decks, 0)
+        decks['decks'].append(new_deck())
 
-    ### loop the decks menu section while we're still adding new decks
-    deck_choice = len(decks['decks'])
-    while deck_choice == len(decks['decks']):
+    deck_choice = "n"
+    while deck_choice == "n":
         # Ask user which deck they want to work with and assign it to a variable
         print("\n-- Decks Menu --")
         for idx, deck in enumerate(decks['decks']):
             print(f"{idx}: {deck['name']}")
-        print(f"{len(decks['decks'])}: New deck")
-        deck_choice = int(input("Which deck would you like to work with? "))
+        print("n: New deck")
+        deck_choice = input("Which deck would you like to work with? ")
 
         # Create a new deck if there aren't any or if the user has indicated they want to
-        if deck_choice == len(decks['decks']):
-            name = input("\nWhat is the name of your new deck? ")
-            new_deck = {
-                "name": name,
-                "cards": []
-            }
-            decks['decks'].append(new_deck)
-            print(f"Your new deck {name} has been created! Please add at least one card.")
-            decks = menu["a"](decks, deck_choice)
-            deck_choice += 1
+        if deck_choice == "n":
+            decks['decks'].append(new_deck())
     
     mode = None
     while mode != "q":
         # Ask what the user would like to do
         print("\n-- Actions Menu --")
-        for key, value in menu.items():
+        for key, value in ACTIONS_MENU.items():
             print(f"{key}: {value.__name__.replace('_', ' ')}")
         print("q: quit")
         mode = input("Which action? ")
         if mode == "q":
             break
         try:
-            decks = menu[mode](decks, deck_choice)
+            deck_choice = int(deck_choice)
+            decks['decks'][deck_choice] = ACTIONS_MENU[mode](decks['decks'][deck_choice])
         except KeyError:
             print("Invalid input. Please enter either 'a' or 's'")
             
