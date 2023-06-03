@@ -28,6 +28,21 @@ def sm2(q: int, n: int, ef: float, i: int):
     return mod_n, mod_ef, mod_i
 
 
+### make new_deck work without the deck_choice variable
+def new_deck(decks: dict, deck_choice: int):
+    mod_decks = decks
+    name = input("\nWhat is the name of your new deck? ")
+    new_deck = {
+        "name": name,
+        "cards": []
+    }
+    mod_decks['decks'].append(new_deck)
+    print(f"Your new deck {name} has been created! Please add at least one card.")
+    mod_decks = add_to_deck(decks, deck_choice)
+    return mod_decks
+
+
+### make add_to_deck work with a single deck instead of the whole decks variable and remove deck_choice argument
 def add_to_deck(decks: dict, deck_choice: int):
     mod_decks = decks
     want_to_quit = False
@@ -49,6 +64,7 @@ def add_to_deck(decks: dict, deck_choice: int):
     return mod_decks
 
 
+### make study_deck work with a single deck and without the deck_choice var
 def study_deck(decks: dict, deck_choice: int):
     mod_decks = decks
     # Add each card to the study queue if it's been at least I (spaced repetition interval) days since the last time the card was studied
@@ -78,12 +94,13 @@ def study_deck(decks: dict, deck_choice: int):
     return mod_decks
 
 
-def main():
-    menu = {
+actions_menu = {
         "a": add_to_deck,
         "s": study_deck,
     }
 
+
+def main():
     # Load the decks from the JSON decks file
     try:
         with open("decks.json", "r") as decks_file:
@@ -97,49 +114,42 @@ def main():
     
     if len(decks['decks']) == 0:
         print("\nYou have no decks yet! Please add at least one deck.")
-        name = input("\nWhat is the name of your new deck? ")
-        new_deck = {
-            "name": name,
-            "cards": []
-        }
-        decks['decks'].append(new_deck)
-        print(f"Your new deck {name} has been created! Please add at least one card.")
-        decks = menu["a"](decks, 0)
+        decks = new_deck(decks, 0)
 
-    ### loop the decks menu section while we're still adding new decks
+    ### instead of doing integer manipulation, make deck_choice be "n" if you want a new deck
+    ### set deck_choice to "n" instead here
     deck_choice = len(decks['decks'])
+    ### while deck_choice == "n"
     while deck_choice == len(decks['decks']):
         # Ask user which deck they want to work with and assign it to a variable
         print("\n-- Decks Menu --")
         for idx, deck in enumerate(decks['decks']):
             print(f"{idx}: {deck['name']}")
+        ### make the menu option "n" instead of the length of decks
         print(f"{len(decks['decks'])}: New deck")
+        ### make deck_choice a string here and cast it as an int later
         deck_choice = int(input("Which deck would you like to work with? "))
 
         # Create a new deck if there aren't any or if the user has indicated they want to
+        ### if deck_choice == "n"
         if deck_choice == len(decks['decks']):
-            name = input("\nWhat is the name of your new deck? ")
-            new_deck = {
-                "name": name,
-                "cards": []
-            }
-            decks['decks'].append(new_deck)
-            print(f"Your new deck {name} has been created! Please add at least one card.")
-            decks = menu["a"](decks, deck_choice)
+            decks = new_deck(decks, deck_choice)
+            ### remove line below
             deck_choice += 1
     
     mode = None
     while mode != "q":
         # Ask what the user would like to do
         print("\n-- Actions Menu --")
-        for key, value in menu.items():
+        for key, value in actions_menu.items():
             print(f"{key}: {value.__name__.replace('_', ' ')}")
         print("q: quit")
         mode = input("Which action? ")
         if mode == "q":
             break
         try:
-            decks = menu[mode](decks, deck_choice)
+            ### actions_menu functions should now work with a single deck and without the deck_choice argument
+            decks = actions_menu[mode](decks, deck_choice)
         except KeyError:
             print("Invalid input. Please enter either 'a' or 's'")
             
