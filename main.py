@@ -28,23 +28,19 @@ def sm2(q: int, n: int, ef: float, i: int):
     return mod_n, mod_ef, mod_i
 
 
-### make new_deck work without the deck_choice variable
-def new_deck(decks: dict, deck_choice: int):
-    mod_decks = decks
+def new_deck():
     name = input("\nWhat is the name of your new deck? ")
     new_deck = {
         "name": name,
         "cards": []
     }
-    mod_decks['decks'].append(new_deck)
     print(f"Your new deck {name} has been created! Please add at least one card.")
-    mod_decks = add_to_deck(decks, deck_choice)
-    return mod_decks
+    new_deck = add_to_deck(new_deck)
+    return new_deck
 
 
-### make add_to_deck work with a single deck instead of the whole decks variable and remove deck_choice argument
-def add_to_deck(decks: dict, deck_choice: int):
-    mod_decks = decks
+def add_to_deck(deck: dict):
+    mod_deck = deck
     want_to_quit = False
     while not want_to_quit:
         # Ask user to define front and back of new card, then add card to deck
@@ -58,17 +54,16 @@ def add_to_deck(decks: dict, deck_choice: int):
             "i": 0,
             "last_studied": time()
         }
-        mod_decks['decks'][deck_choice]['cards'].append(card)
+        mod_deck['cards'].append(card)
         want_to_quit = input("Press q to (q)uit, or any other key to add more cards ") == "q"
-    print(f"{mod_decks['decks'][deck_choice]['name']} has been updated!")
-    return mod_decks
+    print(f"{mod_deck['name']} has been updated!")
+    return mod_deck
 
 
-### make study_deck work with a single deck and without the deck_choice var
-def study_deck(decks: dict, deck_choice: int):
-    mod_decks = decks
+def study_deck(deck: dict):
+    mod_deck = deck
     # Add each card to the study queue if it's been at least I (spaced repetition interval) days since the last time the card was studied
-    study_deck = mod_decks['decks'][deck_choice]
+    study_deck = mod_deck
     to_study = Queue()
     for index, card in enumerate(study_deck['cards']):
         if time() >= card['i']*24*60*60 + card['last_studied']:
@@ -86,18 +81,18 @@ def study_deck(decks: dict, deck_choice: int):
         # Update card metadata
         last_studied = time()
         n, ef, i = sm2(q, current[1]['n'], current[1]['ef'], current[1]['i'])
-        mod_decks['decks'][deck_choice]['cards'][current_idx]['n'] = n
-        mod_decks['decks'][deck_choice]['cards'][current_idx]['ef'] = ef
-        mod_decks['decks'][deck_choice]['cards'][current_idx]['i'] = i
-        mod_decks['decks'][deck_choice]['cards'][current_idx]['last_studied'] = last_studied
+        mod_deck['cards'][current_idx]['n'] = n
+        mod_deck['cards'][current_idx]['ef'] = ef
+        mod_deck['cards'][current_idx]['i'] = i
+        mod_deck['cards'][current_idx]['last_studied'] = last_studied
     print("No more cards to study. Come back tomorrow!")
-    return mod_decks
+    return mod_deck
 
 
-actions_menu = {
-        "a": add_to_deck,
-        "s": study_deck,
-    }
+ACTIONS_MENU = {
+    "a": add_to_deck,
+    "s": study_deck,
+}
 
 
 def main():
@@ -114,42 +109,34 @@ def main():
     
     if len(decks['decks']) == 0:
         print("\nYou have no decks yet! Please add at least one deck.")
-        decks = new_deck(decks, 0)
+        decks['decks'].append(new_deck())
 
-    ### instead of doing integer manipulation, make deck_choice be "n" if you want a new deck
-    ### set deck_choice to "n" instead here
-    deck_choice = len(decks['decks'])
-    ### while deck_choice == "n"
-    while deck_choice == len(decks['decks']):
+    deck_choice = "n"
+    while deck_choice == "n":
         # Ask user which deck they want to work with and assign it to a variable
         print("\n-- Decks Menu --")
         for idx, deck in enumerate(decks['decks']):
             print(f"{idx}: {deck['name']}")
-        ### make the menu option "n" instead of the length of decks
-        print(f"{len(decks['decks'])}: New deck")
-        ### make deck_choice a string here and cast it as an int later
-        deck_choice = int(input("Which deck would you like to work with? "))
+        print("n: New deck")
+        deck_choice = input("Which deck would you like to work with? ")
 
         # Create a new deck if there aren't any or if the user has indicated they want to
-        ### if deck_choice == "n"
-        if deck_choice == len(decks['decks']):
-            decks = new_deck(decks, deck_choice)
-            ### remove line below
-            deck_choice += 1
+        if deck_choice == "n":
+            decks['decks'].append(new_deck())
     
     mode = None
     while mode != "q":
         # Ask what the user would like to do
         print("\n-- Actions Menu --")
-        for key, value in actions_menu.items():
+        for key, value in ACTIONS_MENU.items():
             print(f"{key}: {value.__name__.replace('_', ' ')}")
         print("q: quit")
         mode = input("Which action? ")
         if mode == "q":
             break
         try:
-            ### actions_menu functions should now work with a single deck and without the deck_choice argument
-            decks = actions_menu[mode](decks, deck_choice)
+            deck_choice = int(deck_choice)
+            decks['decks'][deck_choice] = ACTIONS_MENU[mode](decks['decks'][deck_choice])
         except KeyError:
             print("Invalid input. Please enter either 'a' or 's'")
             
