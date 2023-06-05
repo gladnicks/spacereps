@@ -5,7 +5,9 @@ from time import time
 
 def sm2(q: int, n: int, ef: float, i: int):
     """
-    input:  q: The user grade for a card from 0-5
+    Updates card metadata using the SuperMemo2 algorithm for spaced repitition
+
+    Input:  q: The user grade for a card from 0-5
                 0 - Complete failure to recall the information
                 1 - Incorrect response, but upon seeing the correct answer it felt familiar
                 2 - Incorrect response, but upon seeing the correct answer it seemed easy to remember
@@ -15,7 +17,8 @@ def sm2(q: int, n: int, ef: float, i: int):
             n: Number of times the card has been successfully recalled (q >= 3) in a row since the last time it was not
             ef: A card's easiness factor
             i: Inter-repetition interval in days that the program will wait after the previous review before asking to review again
-    output: Updated values of n, ef, and i
+
+    Output: Updated values of n, ef, and i
     """
     if q >= 3:
         mod_n = n + 1
@@ -29,6 +32,11 @@ def sm2(q: int, n: int, ef: float, i: int):
 
 
 def new_deck():
+    """
+    Returns a new blank deck with a name specified by the user
+
+    Output: new blank deck
+    """
     name = input("\nWhat is the name of your new deck? ")
     new_deck = {
         "name": name,
@@ -40,6 +48,13 @@ def new_deck():
 
 
 def add_to_deck(deck: dict):
+    """
+    Allows the user to add cards to a given deck
+
+    Input:  deck: the deck dictionary that the user wants to add to
+
+    Output: the modified deck
+    """
     mod_deck = deck
     want_to_quit = False
     while not want_to_quit:
@@ -61,6 +76,13 @@ def add_to_deck(deck: dict):
 
 
 def study_deck(deck: dict):
+    """
+    Allows the user to study a given deck, updating each card's metadata as it's reviewed
+
+    Input:  deck: the deck dictionary that the user wants to study
+
+    Output: the deck with updated card metadata
+    """
     mod_deck = deck
     # Add each card to the study queue if it's been at least I (spaced repetition interval) days since the last time the card was studied
     study_deck = mod_deck
@@ -107,38 +129,59 @@ def main():
                 "decks": []
             }
     
+    # If there are no decks yet, have the user create one
     if len(decks['decks']) == 0:
         print("\nYou have no decks yet! Please add at least one deck.")
         decks['decks'].append(new_deck())
-
-    deck_choice = "n"
-    while deck_choice == "n":
-        # Ask user which deck they want to work with and assign it to a variable
-        print("\n-- Decks Menu --")
-        for idx, deck in enumerate(decks['decks']):
-            print(f"{idx}: {deck['name']}")
-        print("n: New deck")
-        deck_choice = input("Which deck would you like to work with? ")
-
-        # Create a new deck if there aren't any or if the user has indicated they want to
-        if deck_choice == "n":
-            decks['decks'].append(new_deck())
     
-    mode = None
-    while mode != "q":
-        # Ask what the user would like to do
-        print("\n-- Actions Menu --")
-        for key, value in ACTIONS_MENU.items():
-            print(f"{key}: {value.__name__.replace('_', ' ')}")
-        print("q: quit")
-        mode = input("Which action? ")
-        if mode == "q":
+    # Menus loop
+    while True:
+        # Decks menu loop
+        while True:
+            # Display decks menu
+            print("\n-- Decks Menu --")
+            for idx, deck in enumerate(decks['decks']):
+                print(f"{idx}: {deck['name']}")
+            print("n: new deck")
+            print("q: quit")
+            # Get user input to select a menu option
+            decks_menu_selection = input("Which deck would you like to work with? ")
+            try:
+                decks_menu_selection = int(decks_menu_selection)
+                if decks_menu_selection in range(len(decks['decks'])):
+                    break
+                else:
+                    print("Invalid input. Please enter one of the menu options as displayed.")
+            except ValueError:
+                if decks_menu_selection == "n":
+                    decks['decks'].append(new_deck())
+                elif decks_menu_selection == "q":
+                    break
+                else:
+                    print("Invalid input. Please enter one of the menu options as displayed.")
+        if decks_menu_selection == "q":
             break
-        try:
-            deck_choice = int(deck_choice)
-            decks['decks'][deck_choice] = ACTIONS_MENU[mode](decks['decks'][deck_choice])
-        except KeyError:
-            print("Invalid input. Please enter either 'a' or 's'")
+        
+        # Actions menu loop
+        while True:
+            # Display actions menu
+            print("\n-- Actions Menu --")
+            for key, value in ACTIONS_MENU.items():
+                print(f"{key}: {value.__name__.replace('_', ' ')}")
+            print("r: return to decks menu")
+            print("q: quit")
+            # Get user input to select a menu option
+            actions_menu_selection = input(f"Which action would you like to perform with {decks['decks'][decks_menu_selection]['name']}? ")
+            try:
+                # Perform the selected action to the selected deck
+                decks['decks'][decks_menu_selection] = ACTIONS_MENU[actions_menu_selection](decks['decks'][decks_menu_selection])
+            except KeyError:
+                if actions_menu_selection == "r" or actions_menu_selection == "q":
+                    break
+                else:
+                    print("Invalid input. Please enter one of the menu options as displayed.")
+        if actions_menu_selection == "q":
+            break
             
     # Update the decks json file
     with open("decks.json", "w") as updated_decks_file:
