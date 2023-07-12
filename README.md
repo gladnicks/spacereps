@@ -6,9 +6,12 @@ This project is my attempt at replicating existing spaced repitition flashcard s
 3. I really enjoy the challenge of seeing how well I can remake things.
 
 ## Usage guide
-**Command Line**
+*Command Line*
+
 After cloning, you can execute `python3 main.py` from the main `spacereps` project folder to run the program.
-**Web App**
+
+*Web App*
+
 After cloning, execute `cd app`, then `python3 -m http.server`. Copy and paste the link from the output into a browser, e.g.
 `http://localhost:8000`
 
