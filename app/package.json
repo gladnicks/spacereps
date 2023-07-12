@@ -1,0 +1,21 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "none yet"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gladnicks/spacereps.git"
+  },
+  "author": "Sam Gladnick",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gladnicks/spacereps/issues"
+  },
+  "homepage": "https://github.com/gladnicks/spacereps#readme",
+  "dependencies": {
+  }
+}
