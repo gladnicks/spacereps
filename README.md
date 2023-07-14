@@ -17,5 +17,5 @@ After cloning, execute `cd app`, then `python3 -m http.server`. Copy and paste t
 
 ## TODO / Upcoming features:
 - Expansion of the web app
-- Support the ability to delete and modify decks and the cards within them
+- Support the ability to modify decks and the cards within them
 - Comprehensive tests

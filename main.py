@@ -1,6 +1,7 @@
 import json
 from queue import Queue
 from time import time
+from typing import List
 
 
 def sm2(q: int, n: int, ef: float, i: int):
@@ -45,6 +46,20 @@ def new_deck():
     print(f"Your new deck {name} has been created! Please add at least one card.")
     new_deck = add_to_deck(new_deck)
     return new_deck
+
+
+def delete_entries(entries_dict: dict, entries: List[dict]):
+    mod_entries_dict = entries_dict
+    for entry in entries:
+        try:
+            mod_entries_dict["decks"].remove(entry)
+        except KeyError:
+            try:
+                mod_entries_dict["cards"].remove(entry)
+            except KeyError:
+                print("Bad input")
+                return entries_dict
+    return mod_entries_dict
 
 
 def add_to_deck(deck: dict):
