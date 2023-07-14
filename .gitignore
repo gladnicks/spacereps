@@ -1,2 +1,1 @@
-# Ignore the decks file
-*.json
+# Ignore the decks file once the ability to create the file from the web app is supported
