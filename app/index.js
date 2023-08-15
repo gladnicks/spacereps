@@ -19,32 +19,8 @@ async function main() {
     decks.decks.forEach(deck => {
         content += `<button id=${deck.name}>${deck.name}</button>`;
     });
-    
+
     decksMenuDiv.innerHTML = content;
 }
 
 main();
-
-// try {
-//     fetch('./decks.json')
-//     .then(response => response.json())
-//     .then(decks => {
-//         let content = `<button id=new-deck>New Deck</button>`;
-//         content += `<button id=quit-decks-menu>Quit</button>`;
-//         decks.decks.forEach(deck => {
-//             content += `<button id=${deck.name}>${deck.name}</button>`;
-//         });
-//         decksMenuDiv.innerHTML = content;
-//     });
-// } catch (ReferenceError) {
-//     let decks = {
-//         'decks': []
-//     };
-//     decks = JSON.stringify(decks);
-
-//     fs.writeFile('./decks.json', decks, 'utf-8');
-
-//     let content = `<button id=new-deck>New Deck</button>`;
-//     content += `<button id=quit-decks-menu>Quit</button>`;
-//     decksMenuDiv.innerHTML = content;
-// }

@@ -6,6 +6,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+
 @app.route("/decks", methods=["GET"])
 def load_decks():
     try:
@@ -15,9 +16,10 @@ def load_decks():
         with open("decks.json", "w") as new_decks_file:
             decks = {"decks": []}
             json.dump(decks, new_decks_file, indent=4)
-    
+
     resp = jsonify(decks)
     return resp
+
 
 if __name__ == "__main__":
     app.run("localhost", 9876, debug=True)
