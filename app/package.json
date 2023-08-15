@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "none yet"
+    "test": "none yet",
+    "start": "concurrently \"python server.py\" \"http-server -p 8090\""
   },
   "repository": {
     "type": "git",
@@ -17,5 +18,9 @@
   },
   "homepage": "https://github.com/gladnicks/spacereps#readme",
   "dependencies": {
+    "http-server": "^14.1.1"
+  },
+  "devDependencies": {
+    "concurrently": "*"
   }
 }
