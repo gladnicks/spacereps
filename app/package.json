@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "none yet",
-    "start": "concurrently \"python server.py\" \"http-server -p 8093\""
+    "start": "concurrently \"python server.py\" \"http-server -p 8090\""
   },
   "repository": {
     "type": "git",
