@@ -17,6 +17,7 @@ After cloning, you can execute `python main.py` from the main `spacereps` projec
 *Web App*
 
 After cloning, execute `cd app`, then `poetry install` and `npm install`. Once the dependencies have installed, run `npm start` then open a web browser and navigate to `http://localhost:8090`
+If you make changes and don't see them reflected upon refreshing the browser, hit Ctrl + Shift + R or Command + Shift + R
 
 ## Upcoming features:
 - Expansion of the web app, including:
