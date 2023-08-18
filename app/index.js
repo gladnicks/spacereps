@@ -10,17 +10,20 @@ async function load_decks() {
 }
 
 async function main() {
-    let decksMenuDiv = document.getElementById("decks-menu");
-
-    let content = `<button id=new-deck>New Deck</button>`;
-    content += `<button id=quit-decks-menu>Quit</button>`;
+    let decksMenuOptionsNav = document.querySelector(".decks-menu-options");
 
     let decks = await load_decks();
-    decks.decks.forEach(deck => {
-        content += `<button id=${deck.name}>${deck.name}</button>`;
-    });
 
-    decksMenuDiv.innerHTML = content;
+    let newLink = document.createElement('a');
+    newLink.href = '#new-deck';
+    newLink.textContent = 'New Deck';
+    decksMenuOptionsNav.appendChild(newLink);
+    decks.decks.forEach(deck => {
+        let newLink = document.createElement('a');
+        newLink.href = `#${deck.name}`;
+        newLink.textContent = `${deck.name}`;
+        decksMenuOptionsNav.appendChild(newLink);
+    });
 }
 
 main();
