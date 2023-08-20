@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/decks", methods=["GET"])
+@app.route("/api/decks", methods=["GET"])
 def load_decks():
     try:
         with open("decks.json", "r") as decks_file:
