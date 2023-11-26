@@ -2,10 +2,10 @@
   "name": "app",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "",
   "scripts": {
     "test": "none yet",
-    "start": "concurrently \"python server.py\" \"http-server -p 8090\""
+    "start": "concurrently \"poetry run python server/server.py\" \"http-server -p 8090 frontend\""
   },
   "repository": {
     "type": "git",

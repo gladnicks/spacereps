@@ -12,17 +12,17 @@ I created this for three reasons:
 ## Usage guide
 *Command Line*
 
-After cloning, you can execute `python main.py` from the main `spacereps` project folder to run the program.
+After cloning, you can execute `python spacereps_command_line_program.py` from the main `spacereps` project folder to run the program.
 
 *Web App*
 
-After cloning, execute `cd app`, then `poetry install` and `npm install`. Once the dependencies have installed, run `npm start` then open a web browser and navigate to `http://localhost:8090`
+After cloning, install `poetry` and `npm`, then run `poetry install` and `npm install`. Once the dependencies have installed, run `npm start`, open a web browser, and navigate to `http://localhost:8090`.
 If you make changes and don't see them reflected upon refreshing the browser, hit Ctrl + Shift + R or Command + Shift + R
 
 ## Upcoming features:
 - Expansion of the web app, including:
     - The ability to modify decks and the cards within them
-    - More API endpoints representing existing functionality in the command line utility
+    - More API endpoints representing existing functionality in the command line program
     - More visually appealing layout with CSS
 
 ## Possible room for expansion:

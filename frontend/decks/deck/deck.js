@@ -29,5 +29,5 @@ function main() {
     })
 }
 
-import { decks } from './decks.js';
+import { decks } from '../decks.js';
 main()
