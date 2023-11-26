@@ -1,9 +1,9 @@
 # Ignore the decks file once the ability to create the file from the web app is supported
-app/decks.json
+decks.json
 
 # Ignore node modules
 node_modules/
 node_modules/*
 
-# Ignore personal venv
-app/spacereps-app/
+# Ignore Mac Desktop Services files
+.DS_Store
