@@ -9,20 +9,51 @@ async function load_decks() {
     return resp;
 }
 
+function add_new_deck_button(deck_name, target_nav) {
+    let newButton = document.createElement('button');
+    newButton.textContent = `${deck_name}`;
+    newButton.addEventListener('click', function() {
+        window.location.href += `${deck_name}`;
+    })
+    target_nav.appendChild(newButton);
+}
+
+function add_new_deck(formInputElement) {
+    let userInputValue = formInputElement.value;
+    formInputElement.value = '';
+
+    // Hit the POST /decks/{deck_name} endpoint to create a new blank deck
+
+    add_new_deck_button(userInputValue, decksMenuOptionsNav)
+}
+
 async function main() {
     let decksMenuOptionsNav = document.querySelector(".decks-menu-options");
 
-    let newLink = document.createElement('a');
-    newLink.href = 'deck?deck-name=new-deck';
-    newLink.textContent = 'New Deck';
-    decksMenuOptionsNav.appendChild(newLink);
+    // a button for each deck, each that routes to /decks/{deck_name}
     decks.decks.forEach(deck => {
-        let newLink = document.createElement('a');
-        newLink.href = `deck?deck-name=${deck.name}`;
-        newLink.textContent = `${deck.name}`;
-        decksMenuOptionsNav.appendChild(newLink);
+        add_new_deck_button(deck.name, decksMenuOptionsNav)
     });
+
+    // submit button and form submission use the name to create a new blank deck, then route to /decks/{deck_name}
+    let submitButton = document.getElementById("submit-button");
+    let userInput = document.getElementById("userInput");
+
+    submitButton.addEventListener('click', function() {
+        add_new_deck(userInput);
+    })
+
+    userInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+
+            add_new_deck(userInput);
+        }
+    })
+
 }
 
-export const decks = await load_decks();
+let decks = await load_decks();
+export { decks };
+
 main();
