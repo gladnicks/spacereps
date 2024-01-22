@@ -1,11 +1,11 @@
 {
-  "name": "app",
+  "name": "spacereps",
   "version": "1.0.0",
   "description": "",
-  "main": "",
+  "main": "server.js",
   "scripts": {
     "test": "none yet",
-    "start": "concurrently \"poetry run python server/server.py\" \"http-server -p 8090 frontend\""
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -18,9 +18,8 @@
   },
   "homepage": "https://github.com/gladnicks/spacereps#readme",
   "dependencies": {
-    "http-server": "^14.1.1"
+    "express": "^4.18.2"
   },
   "devDependencies": {
-    "concurrently": "*"
   }
 }
