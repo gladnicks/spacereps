@@ -2,14 +2,16 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="utf-8">
-    <!-- icon source: https://pngtree.com/freepng/vector-planet-icon_3780864.html -->
-    <link rel="icon" type="image/png" href="planet.png">
-    <title>SpaceReps</title>
-    <!-- link to stylesheet -->
-    <!-- link to script -->
+    <title>Home | SpaceReps</title>
+    <link rel="stylesheet" href="/static/css/index.css">
 </head>
 <body>
-    <a href="/decks">Decks Menu</a>
-    <a href="javascript:void(0)">placeholder for about, contact, faq, etc.</a>
+    <nav class="nav">
+        <a href="/" class="nav__link" data-link>Home</a>
+        <a href="/decks" class="nav__link" data-link>Decks Menu</a>
+        <a href="javascript:void(0)" class="nav__link" data-link>placeholder for about, contact, faq, etc.</a>
+    </nav>
+    <div id="app"></div>
+    <script type="module" src="/static/js/index.js"></script>
 </body>
 </html>
