@@ -52,6 +52,13 @@ export default class Decks {
             formInputElement.value = '';
         
             // Hit the POST /decks/{deck_name} endpoint to create a new blank deck
+            fetch('/api/decks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({name: userInputValue}),
+            });
         
             add_new_deck_button(userInputValue, target_nav)
         }
