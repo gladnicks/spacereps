@@ -19,73 +19,70 @@ export default class Decks {
             </header>
         `;
     }
-    
-    async main() {
-        async function load_decks() {
-            try {
-                const resp = await fetch('/api/decks', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-                if (!resp.ok) {
-                    throw new Error(`Failed to fetch decks: ${resp.status} ${resp.statusText}`);
-                }
-                return await resp.json();
-            } catch (error) {
-                return null;
-            }
-        }
-        
-        function add_new_deck_button(deck_name, target_nav) {
-            let newButton = document.createElement('button');
-            newButton.textContent = `${deck_name}`;
-            newButton.addEventListener('click', function() {
-                window.location.href += `${deck_name}`;
-            })
-            target_nav.appendChild(newButton);
-        }
-        
-        function add_new_deck(formInputElement, target_nav) {
-            let userInputValue = formInputElement.value;
-            formInputElement.value = '';
-        
-            // Hit the POST /decks/{deck_name} endpoint to create a new blank deck
-            fetch('/api/decks', {
-                method: 'POST',
+
+    async load_decks() {
+        try {
+            const resp = await fetch('/api/decks', {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({name: userInputValue}),
             });
-        
-            add_new_deck_button(userInputValue, target_nav)
+            if (!resp.ok) {
+                throw new Error(`Failed to fetch decks: ${resp.status} ${resp.statusText}`);
+            }
+            return await resp.json();
+        } catch (error) {
+            return null;
         }
+    }
 
-        let decks = await load_decks();
+    add_new_deck_button(deck_name, target_nav) {
+        let newLink = document.createElement('a');
+        newLink.href = window.location.href + `/${deck_name}`;
+
+        let newButton = document.createElement('button');
+        newButton.textContent = deck_name;
+
+        newLink.appendChild(newButton)
+        target_nav.appendChild(newLink);
+    }
+
+    add_new_deck(formInputElement, target_nav) {
+        let userInputValue = formInputElement.value;
+        formInputElement.value = '';
+    
+        fetch('/api/decks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({name: userInputValue}),
+        });
+    
+       this.add_new_deck_button(userInputValue, target_nav)
+    }
+    
+    async main() {
+        let decks = await this.load_decks();
 
         let decksMenuOptionsNav = document.querySelector(".decks-menu-options");
     
-        // a button for each deck, each that routes to /decks/{deck_name}
         decks.decks.forEach(deck => {
-            add_new_deck_button(deck.name, decksMenuOptionsNav)
+            this.add_new_deck_button(deck.name, decksMenuOptionsNav)
         });
     
-        // submit button and form submission use the name to create a new blank deck, then route to /decks/{deck_name}
         let submitButton = document.getElementById("submit-button");
         let userInput = document.getElementById("userInput");
-    
-        submitButton.addEventListener('click', function() {
-            add_new_deck(userInput, decksMenuOptionsNav);
-        })
-    
-        userInput.addEventListener('keydown', function (event) {
+
+        submitButton.onclick = () => this.add_new_deck(userInput, decksMenuOptionsNav);
+
+        userInput.onkeydown = (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault();
     
-                add_new_deck(userInput, decksMenuOptionsNav);
+                this.add_new_deck(userInput, decksMenuOptionsNav);
             }
-        })
+        }
     }
 }
