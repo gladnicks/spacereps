@@ -6,17 +6,17 @@ export default class Decks {
 
     async getHTML() {
         return `
-            <header class="decks-menu">
-            <h1 class="decks-menu-title">Decks Menu</h1>
-            <nav class="decks-menu-options">
-                <!-- insert decks menu options here -->
-                <form>
-                    <label for="userInput">Enter new deck name:</label>
-                    <input type="text" id="userInput" />
-                    <button type="button" id="submit-button">Submit</button>
-                </form>
-            </nav>
-            </header>
+        <header class="decks-menu">
+        <h1 class="decks-menu-title">Decks Menu</h1>
+        <nav class="decks-menu-options">
+            <!-- insert decks menu options here -->
+            <form>
+                <label for="userInput">Enter new deck name:</label>
+                <input type="text" id="userInput" />
+                <button type="button" id="submit-button">Submit</button>
+            </form>
+        </nav>
+        </header>
         `;
     }
 

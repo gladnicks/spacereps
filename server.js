@@ -34,6 +34,14 @@ app.post('/api/decks', (req, res) => {
     res.status(200);
 });
 
+app.delete('/api/decks/:deck_name', (req, res) => {
+    let decks = fs.readFileSync(DECKS_FILENAME);
+    let decks_json = JSON.parse(decks);
+    decks_json.decks = decks_json.decks.filter(deck => deck.name !== req.params.deck_name);
+    fs.writeFileSync(DECKS_FILENAME, JSON.stringify(decks_json, null, 2), 'utf8');
+    res.status(200);
+});
+
 app.get('/*', (req, res) => {
     res.status(200).sendFile(path.resolve(__dirname, "frontend", "index.html"));
 });
