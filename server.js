@@ -4,22 +4,35 @@ const fs = require('fs');
 
 const app = express();
 
+const DECKS_FILENAME = 'decks.json';
+
 app.use(express.json());
 app.use("/static", express.static(path.resolve(__dirname, "frontend", "static")));
 
 app.get('/api/decks', (req, res) => {
-    const decks = fs.readFileSync('decks.json');
-    const decks_json = JSON.parse(decks);
+    let decks_json;
+    if (!fs.existsSync(DECKS_FILENAME)) {
+        decks_json = {decks: []};
+        fs.writeFileSync(DECKS_FILENAME, JSON.stringify(decks_json, null, 2), 'utf8');
+    } else {
+        const decks = fs.readFileSync(DECKS_FILENAME);
+        decks_json = JSON.parse(decks);
+    }
     res.status(200).json(decks_json);
-})
+});
 
 app.post('/api/decks', (req, res) => {
-    let decks = fs.readFileSync('decks.json');
-    let decks_json = JSON.parse(decks);
-    decks_json.decks.push({name: req.body.name, cards: []});
-    fs.writeFileSync('decks.json', JSON.stringify(decks_json, null, 2), 'utf8');
+    const deck = {name: req.body.name, cards: []};
+    if (!fs.existsSync(DECKS_FILENAME)) {
+        fs.writeFileSync(DECKS_FILENAME, JSON.stringify({decks: [deck]}, null, 2), 'utf8');
+    } else {
+        let decks = fs.readFileSync(DECKS_FILENAME);
+        let decks_json = JSON.parse(decks);
+        decks_json.decks.push(deck);
+        fs.writeFileSync(DECKS_FILENAME, JSON.stringify(decks_json, null, 2), 'utf8');
+    }
     res.status(200);
-})
+});
 
 app.get('/*', (req, res) => {
     res.status(200).sendFile(path.resolve(__dirname, "frontend", "index.html"));
