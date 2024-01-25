@@ -42,6 +42,19 @@ app.delete('/api/decks/:deck_name', (req, res) => {
     res.status(200);
 });
 
+app.get('/api/decks/:deck_name', (req, res) => {
+    let decks = fs.readFileSync(DECKS_FILENAME);
+    let decks_json = JSON.parse(decks);
+    let myDeck;
+    for (const deck of decks_json.decks) {
+        if (deck.name === req.params.deck_name) {
+            myDeck = deck;
+            break;
+        }
+    }
+    res.status(200).json(myDeck);
+})
+
 app.get('/*', (req, res) => {
     res.status(200).sendFile(path.resolve(__dirname, "frontend", "index.html"));
 });
