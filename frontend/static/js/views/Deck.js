@@ -13,6 +13,10 @@ export default class Decks {
             <button class="study-button">Study</button>
         </a>
         <button class="delete-deck-button"></button>
+        
+        <ul id="cards-display-list">
+        </ul>
+
         </header>
         `;
     }
@@ -42,5 +46,23 @@ export default class Decks {
                 window.location.href = path_arr.slice(0, path_arr.length-1).join('/');
             }
         }
+
+        const resp = await fetch(`/api/decks/${deck_name}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!resp.ok) {
+            throw new Error(`Failed to fetch decks: ${resp.status} ${resp.statusText}`);
+        }
+        const myDeck = await resp.json();
+
+        const cardsDisplayList = document.getElementById('cards-display-list');
+        myDeck.cards.forEach(card => {
+            let listElem = document.createElement('li');
+            listElem.textContent = `Front: ${card.front} Back: ${card.back}`;
+            cardsDisplayList.appendChild(listElem);
+        });
     }
 }
