@@ -59,10 +59,10 @@ export default class Decks {
         const myDeck = await resp.json();
 
         const cardsDisplayList = document.getElementById('cards-display-list');
-        myDeck.cards.forEach(card => {
+        for (let card_front in myDeck) {
             let listElem = document.createElement('li');
-            listElem.textContent = `Front: ${card.front} Back: ${card.back}`;
+            listElem.textContent = `Front: ${card_front} Back: ${myDeck[card_front].back}`;
             cardsDisplayList.appendChild(listElem);
-        });
+        }
     }
 }

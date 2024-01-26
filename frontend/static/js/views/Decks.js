@@ -68,9 +68,9 @@ export default class Decks {
 
         let decksMenuOptionsNav = document.querySelector(".decks-menu-options");
     
-        decks.decks.forEach(deck => {
-            this.add_new_deck_button(deck.name, decksMenuOptionsNav)
-        });
+        for (let deck_name in decks) {
+            this.add_new_deck_button(deck_name, decksMenuOptionsNav)
+        }
     
         let submitButton = document.getElementById("submit-button");
         let userInput = document.getElementById("userInput");

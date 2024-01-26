@@ -7,3 +7,6 @@ node_modules/*
 
 # Ignore Mac Desktop Services files
 .DS_Store
+
+# No longer relevant to the project
+spacereps_cli.py
