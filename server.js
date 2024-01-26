@@ -12,7 +12,7 @@ app.use("/static", express.static(path.resolve(__dirname, "frontend", "static"))
 app.get('/api/decks', (req, res) => {
     let decks_json;
     if (!fs.existsSync(DECKS_FILENAME)) {
-        decks_json = {decks: []};
+        decks_json = {};
         fs.writeFileSync(DECKS_FILENAME, JSON.stringify(decks_json, null, 2), 'utf8');
     } else {
         const decks = fs.readFileSync(DECKS_FILENAME);
@@ -22,13 +22,13 @@ app.get('/api/decks', (req, res) => {
 });
 
 app.post('/api/decks', (req, res) => {
-    const deck = {name: req.body.name, cards: []};
+    const deck_name = req.body.name;
     if (!fs.existsSync(DECKS_FILENAME)) {
-        fs.writeFileSync(DECKS_FILENAME, JSON.stringify({decks: [deck]}, null, 2), 'utf8');
+        fs.writeFileSync(DECKS_FILENAME, JSON.stringify({[deck_name]: {}}, null, 2), 'utf8');
     } else {
         let decks = fs.readFileSync(DECKS_FILENAME);
         let decks_json = JSON.parse(decks);
-        decks_json.decks.push(deck);
+        decks_json[deck_name] = {};
         fs.writeFileSync(DECKS_FILENAME, JSON.stringify(decks_json, null, 2), 'utf8');
     }
     res.status(200);
@@ -37,21 +37,15 @@ app.post('/api/decks', (req, res) => {
 app.delete('/api/decks/:deck_name', (req, res) => {
     let decks = fs.readFileSync(DECKS_FILENAME);
     let decks_json = JSON.parse(decks);
-    decks_json.decks = decks_json.decks.filter(deck => deck.name !== req.params.deck_name);
+    delete decks_json[req.params.deck_name];
     fs.writeFileSync(DECKS_FILENAME, JSON.stringify(decks_json, null, 2), 'utf8');
     res.status(200);
 });
 
 app.get('/api/decks/:deck_name', (req, res) => {
-    let decks = fs.readFileSync(DECKS_FILENAME);
-    let decks_json = JSON.parse(decks);
-    let myDeck;
-    for (const deck of decks_json.decks) {
-        if (deck.name === req.params.deck_name) {
-            myDeck = deck;
-            break;
-        }
-    }
+    const decks = fs.readFileSync(DECKS_FILENAME);
+    const decks_json = JSON.parse(decks);
+    const myDeck = decks_json[req.params.deck_name];
     res.status(200).json(myDeck);
 })
 
