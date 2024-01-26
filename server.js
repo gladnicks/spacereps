@@ -49,6 +49,14 @@ app.get('/api/decks/:deck_name', (req, res) => {
     res.status(200).json(myDeck);
 })
 
+app.post('/api/decks/:deck_name', (req, res) => {
+    let decks = fs.readFileSync(DECKS_FILENAME);
+    let decks_json = JSON.parse(decks);
+    decks_json[req.params.deck_name][req.body.front] = {back: req.body.back, n: 0, ef: 2.5, i: 0, last_studied: Date.now()};
+    fs.writeFileSync(DECKS_FILENAME, JSON.stringify(decks_json, null, 2), 'utf8');
+    res.status(200);
+})
+
 app.get('/*', (req, res) => {
     res.status(200).sendFile(path.resolve(__dirname, "frontend", "index.html"));
 });
