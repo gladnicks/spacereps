@@ -14,11 +14,45 @@ export default class Decks {
         </a>
         <button class="delete-deck-button"></button>
         
+        <form>
+            <label for="cardFrontInput">Enter front of new card:</label>
+            <input type="text" id="cardFrontInput" />
+
+            <label for="cardBackInput">Enter back of new card:</label>
+            <input type="text" id="cardBackInput" />
+
+            <button type="button" id="card-submit-button">Submit</button>
+        </form>
+
         <ul id="cards-display-list">
         </ul>
 
         </header>
         `;
+    }
+
+    add_new_card_list_element(card_front, card_back, target_nav) {
+        let listElem = document.createElement('li');
+        listElem.textContent = `Front: ${card_front} Back: ${card_back}`;
+        target_nav.appendChild(listElem);
+    }
+
+    add_new_card(deckName, cardFrontInputElement, cardBackInputElement, target_nav) {
+        let cardFrontInputValue = cardFrontInputElement.value;
+        let cardBackInputValue = cardBackInputElement.value;
+        cardFrontInputElement.value = '';
+        cardBackInputElement.value = '';
+
+    
+        fetch(`/api/decks/${deckName}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({front: cardFrontInputValue, back: cardBackInputValue}),
+        });
+    
+       this.add_new_card_list_element(cardFrontInputValue, cardBackInputValue, target_nav)
     }
 
     async main() {
@@ -63,6 +97,23 @@ export default class Decks {
             let listElem = document.createElement('li');
             listElem.textContent = `Front: ${card_front} Back: ${myDeck[card_front].back}`;
             cardsDisplayList.appendChild(listElem);
+        }
+
+        let cardSubmitButton = document.getElementById("card-submit-button");
+        let cardFrontInput = document.getElementById("cardFrontInput");
+        let cardBackInput = document.getElementById("cardBackInput");
+
+        cardSubmitButton.onclick = () => this.add_new_card(deck_name, cardFrontInput, cardBackInput, cardsDisplayList);
+
+        cardFrontInput.onkeydown = (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        }
+        cardBackInput.onkeydown = (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
         }
     }
 }
