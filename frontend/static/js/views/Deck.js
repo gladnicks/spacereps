@@ -37,13 +37,7 @@ export default class Decks {
         target_nav.appendChild(listElem);
     }
 
-    add_new_card(deckName, cardFrontInputElement, cardBackInputElement, target_nav) {
-        let cardFrontInputValue = cardFrontInputElement.value;
-        let cardBackInputValue = cardBackInputElement.value;
-        cardFrontInputElement.value = '';
-        cardBackInputElement.value = '';
-
-    
+    add_new_card_to_deck(deckName, cardFrontInputValue, cardBackInputValue) {
         fetch(`/api/decks/${deckName}`, {
             method: 'POST',
             headers: {
@@ -51,8 +45,18 @@ export default class Decks {
             },
             body: JSON.stringify({front: cardFrontInputValue, back: cardBackInputValue}),
         });
-    
-       this.add_new_card_list_element(cardFrontInputValue, cardBackInputValue, target_nav)
+    }
+
+    handle_new_card_form_submission(deck_name, target_nav, card_front_input_element, card_back_input_element) {
+        let cardFrontInputValue = card_front_input_element.value;
+        let cardBackInputValue = card_back_input_element.value;
+        if (cardFrontInputValue !== '' && cardBackInputValue !== '') {
+            card_front_input_element.value = '';
+            card_back_input_element.value = '';
+
+            this.add_new_card_to_deck(deck_name, cardFrontInputValue, cardBackInputValue);
+            this.add_new_card_list_element(cardFrontInputValue, cardBackInputValue, target_nav);
+        }
     }
 
     async main() {
@@ -94,26 +98,25 @@ export default class Decks {
 
         const cardsDisplayList = document.getElementById('cards-display-list');
         for (let card_front in myDeck) {
-            let listElem = document.createElement('li');
-            listElem.textContent = `Front: ${card_front} Back: ${myDeck[card_front].back}`;
-            cardsDisplayList.appendChild(listElem);
+            this.add_new_card_list_element(card_front, myDeck[card_front].back, cardsDisplayList);
         }
 
         let cardSubmitButton = document.getElementById("card-submit-button");
         let cardFrontInput = document.getElementById("cardFrontInput");
         let cardBackInput = document.getElementById("cardBackInput");
 
-        cardSubmitButton.onclick = () => this.add_new_card(deck_name, cardFrontInput, cardBackInput, cardsDisplayList);
-
+        cardSubmitButton.onclick = () => this.handle_new_card_form_submission(deck_name, cardsDisplayList, cardFrontInput, cardBackInput);
         cardFrontInput.onkeydown = (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault();
+                this.handle_new_card_form_submission(deck_name, cardsDisplayList, cardFrontInput, cardBackInput);
             }
-        }
+        };
         cardBackInput.onkeydown = (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault();
+                this.handle_new_card_form_submission(deck_name, cardsDisplayList, cardFrontInput, cardBackInput);
             }
-        }
+        };
     }
 }
