@@ -48,19 +48,23 @@ export default class Decks {
         target_nav.appendChild(newLink);
     }
 
-    add_new_deck(formInputElement, target_nav) {
-        let userInputValue = formInputElement.value;
-        formInputElement.value = '';
-    
+    add_new_deck_to_decks(deck_name) {
         fetch('/api/decks', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({name: userInputValue}),
+            body: JSON.stringify({name: deck_name}),
         });
-    
-       this.add_new_deck_button(userInputValue, target_nav)
+    }
+
+    handle_new_deck_form_submission(formInputElement, target_nav) {
+        let userInputValue = formInputElement.value;
+        if (userInputValue !== '') {
+            formInputElement.value = '';
+            this.add_new_deck_to_decks(userInputValue);
+            this.add_new_deck_button(userInputValue, target_nav);
+        }
     }
     
     async main() {
@@ -69,20 +73,18 @@ export default class Decks {
         let decksMenuOptionsNav = document.querySelector(".decks-menu-options");
     
         for (let deck_name in decks) {
-            this.add_new_deck_button(deck_name, decksMenuOptionsNav)
+            this.add_new_deck_button(deck_name, decksMenuOptionsNav);
         }
     
         let submitButton = document.getElementById("submit-button");
         let userInput = document.getElementById("userInput");
 
-        submitButton.onclick = () => this.add_new_deck(userInput, decksMenuOptionsNav);
-
+        submitButton.onclick = () => this.handle_new_deck_form_submission(userInput, decksMenuOptionsNav);
         userInput.onkeydown = (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault();
-    
-                this.add_new_deck(userInput, decksMenuOptionsNav);
+                this.handle_new_deck_form_submission(userInput, decksMenuOptionsNav);
             }
-        }
+        };
     }
 }
