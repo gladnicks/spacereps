@@ -31,9 +31,27 @@ export default class Decks {
         `;
     }
 
-    add_new_card_list_element(card_front, card_back, target_nav) {
+    add_new_card_list_element(deck_name, card_front, card_back, target_nav) {
         let listElem = document.createElement('li');
         listElem.textContent = `Front: ${card_front} Back: ${card_back}`;
+
+        let deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.onclick = () => {
+            if (deleteButton.textContent === 'Delete') {
+                deleteButton.textContent = 'Are you sure?';
+            } else {
+                target_nav.removeChild(listElem);
+                fetch(`/api/decks/${deck_name}/${card_front}`, {
+                    method: "DELETE",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+            }
+        };
+
+        listElem.appendChild(deleteButton);
         target_nav.appendChild(listElem);
     }
 
@@ -55,7 +73,7 @@ export default class Decks {
             card_back_input_element.value = '';
 
             this.add_new_card_to_deck(deck_name, cardFrontInputValue, cardBackInputValue);
-            this.add_new_card_list_element(cardFrontInputValue, cardBackInputValue, target_nav);
+            this.add_new_card_list_element(deck_name, cardFrontInputValue, cardBackInputValue, target_nav);
         }
     }
 
@@ -98,7 +116,7 @@ export default class Decks {
 
         const cardsDisplayList = document.getElementById('cards-display-list');
         for (let card_front in myDeck) {
-            this.add_new_card_list_element(card_front, myDeck[card_front].back, cardsDisplayList);
+            this.add_new_card_list_element(deck_name, card_front, myDeck[card_front].back, cardsDisplayList);
         }
 
         let cardSubmitButton = document.getElementById("card-submit-button");
