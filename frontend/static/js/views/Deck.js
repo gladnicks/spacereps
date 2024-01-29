@@ -83,7 +83,7 @@ export default class Decks {
         const deck_name = paths[paths.length - 1];
         document.querySelector('.deck-display-title').textContent = deck_name;
 
-        document.querySelector('.study-button-link').href = window.location.pathname + '/study';
+        document.querySelector('.study-button-link').href = window.location.href + '/study';
 
         let deleteDeckButton = document.querySelector('.delete-deck-button');
         deleteDeckButton.textContent = `Delete ${deck_name}`;

@@ -1,8 +1,9 @@
 import Home from "./views/Home.js";
 import Decks from "./views/Decks.js";
 import Deck from "./views/Deck.js"
+import Study from "./views/Study.js"
 
-const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
+const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "([^\\/]+)") + "$");
 
 const getParams = match => {
     const values = match.result.slice(1);
@@ -22,7 +23,8 @@ const router = async () => {
     const routes = [
         {path: "/", view: Home},
         {path: "/decks", view: Decks},
-        {path: "/decks/:id", view: Deck},
+        {path: "/decks/:deck_name", view: Deck},
+        {path: "/decks/:deck_name/study", view: Study},
     ];
 
     const potentialMatches = routes.map(route => {
